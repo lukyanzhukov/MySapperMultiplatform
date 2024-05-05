@@ -1,0 +1,80 @@
+@startuml
+
+' Определение класса Cell
+class Cell {
+    + x : Int
+    + y : Int
+    + isMine : Boolean
+    + isOpen : Boolean
+    + isMarked : Boolean
+    + minesAround : Int
+}
+
+' Определение абстрактного класса SapperState
+abstract class SapperState {
+    {abstract} + width : Int
+    {abstract} + height : Int
+    {abstract} + minesCount : Int
+    {abstract} + cells : List<List<Cell>>
+}
+
+' Определение производных классов от SapperState
+class Initial {
+    + getInitialState(width: Int, height: Int, minesCount: Int) : Initial
+}
+
+class Playing {
+    + gameTimeInSeconds : Int
+}
+
+class Won {
+}
+
+class Lost {
+}
+
+' Наследование SapperState
+Initial -up-|> SapperState
+Playing -up-|> SapperState
+Won -up-|> SapperState
+Lost -up-|> SapperState
+
+' Определение SapperIntent
+abstract class SapperIntent {
+}
+
+class OpenCell {
+    + x : Int
+    + y : Int
+}
+
+class ToggleMarkCell {
+    + x : Int
+    + y : Int
+}
+
+class RestartGame {
+}
+
+class UpdateSecondTimer {
+}
+
+' Наследование SapperIntent
+OpenCell -up-|> SapperIntent
+ToggleMarkCell -up-|> SapperIntent
+RestartGame -up-|> SapperIntent
+UpdateSecondTimer -up-|> SapperIntent
+
+' Класс SapperStore
+class SapperStore {
+    + send(action : SapperIntent) : void
+    + stateFlow : StateFlow<SapperState>
+    - mutableStateFlow : MutableStateFlow<SapperState>
+    - channel : Channel<SapperIntent>
+}
+
+' Отношения между SapperStore и SapperState, SapperIntent
+SapperStore "1" -- "1" SapperState : stores >
+SapperStore "1" -- "many" SapperIntent : processes >
+
+@enduml

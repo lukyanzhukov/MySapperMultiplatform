@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="my_sapper_topbar_name">Сапёр</string>
+    <string name="my_sapper_start_label">Чтобы начать игру, нажми на любую ячейку</string>
+    <string name="my_sapper_lose_label">Поражение</string>
+    <string name="my_sapper_win_label">Победа</string>
+    <string name="my_sapper_timer_label">Прошло времени с начала игры (сек):</string>
+    <string name="my_sapper_marked_mines_count_label">Помеченных мин:</string>
+    <string name="my_sapper_left_mines_count_label">Осталось мин:</string>
+    <string name="my_sapper_restart_button">Начать заново</string>
+
+    <string name="my_sapper_info_menu_item">Справка</string>
+    <string name="my_sapper_about_developer_item">О разработчике</string>
+
+    <string name="my_sapper_info">Эта игра Сапёр написана в качестве проекта для изучения языка ООП Kotlin Multiplatform, с использованием декларативного фреймворка Compose Multiplatform и UDF (Unidirectional Data Flow) подхода к архитектуре приложения.\n\nДанное приложение может запускаться на следующих платформах: iOS, Android, Windows, MacOS, Linux.
+    </string>
+
+    <string name="my_sapper_about_developer">Разработчик данного приложения: Жуков Лукьян android-разработчик HH.RU</string>
+
+    <string name="my_sapper_marker">🚩</string>
+    <string name="my_sapper_mine">💣</string>
+</resources>
