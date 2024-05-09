@@ -55,7 +55,14 @@ private fun MainScreen() {
     ) {
         Scaffold(
             topBar = { MySapperTopBar(bottomSheetState, bottomSheetContent) },
-            content = { padding -> ScreenContent(state, padding) },
+            content = { padding ->
+                ScreenContent(
+                    state = state,
+                    padding = padding,
+                    onCellClicked = remember { { store.send(SapperIntent.OpenCell(it.x, it.y)) } },
+                    onCellLongPressed = remember { { store.send(SapperIntent.ToggleMarkCell(it.x, it.y)) } },
+                )
+            },
             bottomBar = {
                 Button(
                     content = { Text(stringResource(Res.string.my_sapper_restart_button)) },
@@ -145,7 +152,12 @@ private fun BottomSheetContent(title: String, content: String) {
 }
 
 @Composable
-private fun ScreenContent(state: SapperState, padding: PaddingValues) {
+private fun ScreenContent(
+    state: SapperState,
+    padding: PaddingValues,
+    onCellClicked: (Cell) -> Unit,
+    onCellLongPressed: (Cell) -> Unit
+) {
     Column(
         modifier = Modifier.padding(padding).padding(horizontal = 16.dp)
     ) {
@@ -173,8 +185,8 @@ private fun ScreenContent(state: SapperState, padding: PaddingValues) {
         }
         GameBoard(
             state = state,
-            onCellClicked = remember { { store.send(SapperIntent.OpenCell(it.x, it.y)) } },
-            onCellLongPressed = remember { { store.send(SapperIntent.ToggleMarkCell(it.x, it.y)) } },
+            onCellClicked = onCellClicked,
+            onCellLongPressed = onCellLongPressed,
         )
     }
 }
@@ -196,29 +208,29 @@ private fun GameBoard(
     }
 }
 
-@Composable
-private fun CellView(cell: Cell, onCellClicked: () -> Unit, onCellLongPressed: () -> Unit) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(40.dp)
-            .padding(4.dp)
-            .background(
-                color = if (cell.isMarked) Color.Yellow else if (cell.isOpen) Color.LightGray else Color.DarkGray,
-                shape = RoundedCornerShape(4.dp)
+    @Composable
+    private fun CellView(cell: Cell, onCellClicked: () -> Unit, onCellLongPressed: () -> Unit) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(40.dp)
+                .padding(4.dp)
+                .background(
+                    color = if (cell.isMarked) Color.Yellow else if (cell.isOpen) Color.LightGray else Color.DarkGray,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .combinedClickable(onClick = onCellClicked, onLongClick = onCellLongPressed)
+        ) {
+            Text(
+                text = when {
+                    cell.isMarked -> stringResource(Res.string.my_sapper_marker)
+                    cell.isOpen && cell.isMine -> stringResource(Res.string.my_sapper_mine)
+                    cell.isOpen -> cell.minesAround.toString()
+                    else -> ""
+                },
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (cell.isMine && cell.isOpen) Color.Red else Color.Black,
             )
-            .combinedClickable(onClick = onCellClicked, onLongClick = onCellLongPressed)
-    ) {
-        Text(
-            text = when {
-                cell.isMarked -> stringResource(Res.string.my_sapper_marker)
-                cell.isOpen && cell.isMine -> stringResource(Res.string.my_sapper_mine)
-                cell.isOpen -> cell.minesAround.toString()
-                else -> ""
-            },
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (cell.isMine && cell.isOpen) Color.Red else Color.Black,
-        )
+        }
     }
-}

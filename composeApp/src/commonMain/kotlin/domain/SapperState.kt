@@ -3,18 +3,18 @@ package domain
 import androidx.compose.runtime.Immutable
 
 @Immutable
-internal sealed class SapperState {
-    abstract val width: Int
-    abstract val height: Int
-    abstract val minesCount: Int
-    abstract val cells: List<List<Cell>>
+internal sealed interface SapperState {
+    val width: Int
+    val height: Int
+    val minesCount: Int
+    val cells: List<List<Cell>>
 
     data class Initial(
         override val width: Int,
         override val height: Int,
         override val minesCount: Int,
         override val cells: List<List<Cell>>,
-    ) : SapperState() {
+    ) : SapperState {
 
         companion object {
             fun getInitialState(
@@ -38,20 +38,20 @@ internal sealed class SapperState {
         override val minesCount: Int,
         override val cells: List<List<Cell>>,
         val gameTimeInSeconds: Int = 0,
-    ) : SapperState()
+    ) : SapperState
 
     data class Won(
         override val width: Int,
         override val height: Int,
         override val minesCount: Int,
         override val cells: List<List<Cell>>,
-    ) : SapperState()
+    ) : SapperState
 
     data class Lost(
         override val width: Int,
         override val height: Int,
         override val minesCount: Int,
         override val cells: List<List<Cell>>,
-    ) : SapperState()
+    ) : SapperState
 }
 

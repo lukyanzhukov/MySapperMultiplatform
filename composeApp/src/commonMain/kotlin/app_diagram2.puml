@@ -1,0 +1,116 @@
+@startuml
+
+package "domain" {
+    class "Cell" {
+        + x : int
+        + y : int
+        + isMine : boolean = false
+        + isOpen : boolean = false
+        + isMarked : boolean = false
+        + minesAround : int = 0
+    }
+
+    interface "SapperIntent" << (I,orchid) Sealed >> {
+    }
+
+    class "OpenCell" {
+        + x : int
+        + y : int
+    }
+
+    class "ToggleMarkCell" {
+        + x : int
+        + y : int
+    }
+
+    class "RestartGame" {
+    }
+
+    class "UpdateSecondTimer" {
+    }
+
+    OpenCell --|> SapperIntent
+    ToggleMarkCell --|> SapperIntent
+    RestartGame --|> SapperIntent
+    UpdateSecondTimer --|> SapperIntent
+
+    interface "SapperState" << (I,orchid) Sealed >> {
+        {abstract} + width : int
+        {abstract} + height : int
+        {abstract} + minesCount : int
+        {abstract} + cells : List<List<Cell>>
+    }
+
+    class "Initial" {
+    }
+
+    class "Playing" {
+        + gameTimeInSeconds: Int
+    }
+
+    class "Won" {
+    }
+
+    class "Lost" {
+    }
+
+    Initial --|> SapperState
+    Playing --|> SapperState
+    Won --|> SapperState
+    Lost --|> SapperState
+
+    class "SapperStore" {
+        - coroutineScope : CoroutineScope
+        - mutableStateFlow : MutableStateFlow<SapperState>
+        - channel : Channel<SapperIntent>
+        + stateFlow: StateFlow<SapperState>
+        + send(action : SapperIntent) : void
+    }
+}
+
+package "presentation" {
+    class "App" << (C,orchid) Composable >> {
+        + MainScreen()
+    }
+
+    class "MainScreen" << (C,orchid) Composable >> {
+        + MySapperTopBar()
+        + ScreenContent()
+    }
+
+    class "MySapperTopBar" << (C,orchid) Composable >> {
+        + bottomSheetState : ModalBottomSheetState
+        + bottomSheetContent : MutableState<BottomSheetContent?>
+    }
+
+    class "ScreenContent" << (C,orchid) Composable >> {
+        + state : SapperState
+        + padding : PaddingValues
+        + GameBoard()
+    }
+
+    class "GameBoard" << (C,orchid) Composable >> {
+        + state : SapperState
+        + CellView()
+    }
+
+    class "CellView" << (C,orchid) Composable >> {
+        + cell : Cell
+    }
+}
+
+' Отношения вызова между Composable функциями
+App --> MainScreen : <<call>>
+MainScreen --> MySapperTopBar : <<call>>
+MainScreen --> ScreenContent : <<call>>
+ScreenContent --> GameBoard : <<call>>
+GameBoard --> CellView : <<call>>
+
+' Связь между доменным и презентационным слоями
+presentation.App ..> domain.SapperStore : <<use>>
+presentation.MainScreen ..> domain.SapperStore : <<use>>
+presentation.ScreenContent ..> domain.SapperStore : <<use>>
+presentation.GameBoard ..> domain.SapperState : <<use>>
+presentation.CellView ..> domain.Cell : <<use>>
+
+@enduml
